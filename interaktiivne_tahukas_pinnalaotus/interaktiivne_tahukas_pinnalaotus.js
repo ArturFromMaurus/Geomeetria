@@ -15,7 +15,7 @@ tooltip.style.width="340px"
 document.body.appendChild(tooltip);
 
 regularText = document.createElement("div");
-regularText.innerHTML = "NB!<br><br>Tasub rõhutada, et püstprisma täispindala sõltub prisma põhjast.<br>Kuna praeguses näites on põhjaks ruut, siis on ka põhja pindala arvutatav ruudu pindala valemiga. Kui põhjaks oleks aga kolmnurk või mõni hulknurk, siis tuleks valida nendele kujunditele vastav pindala valem.<br>Külgpindala sõltub samuti prisma põhjast. Kui põhjaks on kujund, mille kõik küljed on võrdsed, siis piisab sellest, kui arvutame ühe külje ristküliku pindala ja korrutame selle põhja külgede arvuga. Kui põhjaks on aga erinevate külgedega kujund, siis on ka külgedel olevate ristkülikute alused erinevad ja seega tuleb nende pindalad eraldi välja arvutada ja lõpuks tulemused summeerida.";
+regularText.innerHTML = "Püstprisma täispindala sõltub prisma põhjast.";
 regularText.style.fontFamily="Computer Modern";
 regularText.style.fontSize="16px";
 tooltip.appendChild(regularText);
@@ -102,7 +102,7 @@ var nurk_eesmine_tahk_SUM=0;
 var nurk_parem_tahk_SUM=0;
 var nurk_vasak_tahk_SUM=0;
 
-var toggle=true;
+var toggle=false;
 
 function setup() {
   createCanvas(400, 400,WEBGL);
@@ -111,31 +111,36 @@ function setup() {
   strokeWeight(2);
   noFill();
   
-  STOP=createButton("Stop");
+  STOP=createButton("<b>Jätka</b>");
   STOP.mousePressed(stop_rotate);
   STOP.style('padding','10px 20px');
-  STOP.style('background-color',"#00897B");
-  STOP.style('color','black');
+  STOP.style('background-color','#FF8F00');
+  STOP.style('color','white');
   STOP.style('border-radius','30px');
   STOP.style('margin-top','30px');
   STOP.style('margin-left','15px');
   STOP.style("width","370px");
   STOP.position(0,330);
   
+  liigutamise_tekst_HTML=createP("Saad seda pinnalaotust liigutada ja erinevate<br>nurkade alt uurida.")
+  liigutamise_tekst_HTML.position(30,10);
+  liigutamise_tekst_HTML.style("color:white");
+  liigutamise_tekst_HTML.style("font-size:16px");
+
   pindala_HTML=createP("");
-  pindala_HTML.position(30,30);
+  pindala_HTML.position(30,60);
   pindala_HTML.style("color:white");
   
   Sp_HTML=createP("");
-  Sp_HTML.position(30,70);
+  Sp_HTML.position(30,100);
   Sp_HTML.style("color:white");
   
   Sk_HTML=createP("");
-  Sk_HTML.position(30,110);
+  Sk_HTML.position(30,140);
   Sk_HTML.style("color:white");
   
   kolmnurk_HTML=createP("");
-  kolmnurk_HTML.position(30,150);
+  kolmnurk_HTML.position(30,180);
   kolmnurk_HTML.style("color:white");
   
 }
@@ -414,13 +419,13 @@ function stop_rotate(){
     toggle=false;
     step=0;
     STOP.style('background-color','#FF8F00');
-    STOP.style('color','black');
-    STOP.html("Jätka")
+    STOP.style('color','white');
+    STOP.html("<b>Jätka</b>")
   } else if (toggle==false){
     toggle=true;
     step=1;
     STOP.style('background-color',"#00897B");
-    STOP.style('color','black');
-    STOP.html("Stop")
+    STOP.style('color','white');
+    STOP.html("<b>Peata</b>")
   }
 }
