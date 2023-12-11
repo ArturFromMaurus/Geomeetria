@@ -26,16 +26,15 @@ tooltip.style.position = "absolute";
 tooltip.style.display = "none";
 tooltip.style.zIndex="1";
 tooltip.style.border="solid 2px black";
-tooltip.style.width="540px"
 document.body.appendChild(tooltip);
 
 regularText = document.createElement("div");
-regularText.innerHTML = "Vastuseid saab sisestada täisarvudena, lõplike kümnendmurdudena (3 komakohta max) ning harilike murdudena. Murrujoone sisestamiseks kasuta / (kaldkriips) sümbolit. Segaarvu asemel sisesta liigmurd.<br><br>";
+regularText.innerHTML = "Kasuta selles rakenduses koma asemel punkti.<br>Trüki vastus ilma tühikuteta.";
 regularText.style.fontFamily="Computer Modern";
 regularText.style.fontSize="20px";
 tooltip.appendChild(regularText);
 
-KaTeX_EQ="\\text{Näiteks kui soovid kirjutada murdu } \\dfrac{a}{b} \\text{ siis tuleb trükkida a/b}."
+KaTeX_EQ=""
 katexEquation = document.createElement("div");
 tooltip.appendChild(katexEquation);
 
