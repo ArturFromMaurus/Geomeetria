@@ -1,267 +1,512 @@
-var init_X=[];
-var init_Y=[];
-var init_X2=[];
-var init_Y2=[];
-var init_X3=[];
-var init_Y3=[];
-var init_X4=[];
-var init_Y4=[];
+var step=5;
+let X=0;
+let Y=0;
+let Z=0;
+let angle=0;
 
-var Xc;
-var Yc;
-var Xc2;
-var Yc2;
-var Xc3;
-var Yc3;
-var Xc4;
-var Yc4;
+var asukoha_nr=10;
+var ylesannete_loendur=0;
+var oige_vastus=0;
+var lopetamise_tingimus=false;
 
-var node_radius=0;
-var nr_nodes=25; // since the first and last nodes merge, we need to N+1 for N-nurk.
-var slicer=1;
-var slicer_mark=1;
+var alt_vastused1=[];
+var alt_vastused2=[];
 
-var X_start=150;
-var Y_start=200;
-var X_start2=150;
-var Y_start2=190;
-var X_start3=150;
-var Y_start3=180;
-var X_start4=150;
-var Y_start4=170;
+var vastused_korras=false;
 
-var X_step=10;
-var C1=(X_step*nr_nodes);
-var r1=C1/(2*Math.PI);
-var C2=2*Math.PI*(r1-(Y_start-Y_start2)); 
-var C3=2*Math.PI*(r1-(Y_start-Y_start3)); 
-var C4=2*Math.PI*(r1-(Y_start-Y_start4)); 
-var X_step2=C2/25;
-var X_step3=C3/25;
-var X_step4=C4/25;
 
-var rot_angle=-1;
-var new_points_to_rotate_X;
-var new_points_to_rotate_Y;
 
-var new_points_to_rotate_X2;
-var new_points_to_rotate_Y2;
+window.onload = function() {
+  // ----------------------------------------- HTML ToolTip ------------------------------------------
 
-var new_points_to_rotate_X3;
-var new_points_to_rotate_Y3;
+tooltip = document.createElement("div");
+tooltip.style.backgroundColor = "rgba(9,9,96,0.95)"
+tooltip.style.color = "white";
+tooltip.style.borderRadius="25px";
+tooltip.style.padding = "10px";
+tooltip.style.position = "absolute";
+tooltip.style.display = "none";
+tooltip.style.zIndex="1";
+tooltip.style.border="solid 2px black";
+tooltip.style.width="540px"
+document.body.appendChild(tooltip);
 
-var new_points_to_rotate_X4;
-var new_points_to_rotate_Y4;
+regularText = document.createElement("div");
+regularText.innerHTML = "NB! Kasuta &#8508 = 3.14.<br><br>Raadius ja diameeter ümarda täisarvuks (isegi arvutustes).<br>Pindala ja ümbermõõt ümarda aga sajandikeni (2 kohta pärast koma).";
+regularText.style.fontFamily="Computer Modern";
+regularText.style.fontSize="20px";
+tooltip.appendChild(regularText);
 
-var total_deg=0;
+KaTeX_EQ=""
+katexEquation = document.createElement("div");
+tooltip.appendChild(katexEquation);
 
-var tagged=false;
 
-var toggle=true;
+// Info nuppu funktsionaalsus
+infoNupp = document.createElement("button");
+infoNupp.innerHTML = "i";
+infoNupp.style.position = "absolute";
+infoNupp.style.margin="20px";
+infoNupp.style.top="12px";
+infoNupp.style.left="5px";
+infoNupp.style.padding="5px 12px";
+infoNupp.style.fontSize="20px";
+infoNupp.style.fontWeight="bold";
+infoNupp.style.fontFamily="Hoefler Text";
+infoNupp.style.fontStyle="italic";
+infoNupp.style.background="transparent";
+infoNupp.style.border="solid 2px black";
+infoNupp.style.borderRadius="50%";
+document.body.appendChild(infoNupp);
+
+infoNupp.addEventListener("mouseenter", function() {
+  tooltip.style.left = (infoNupp.offsetLeft + infoNupp.offsetWidth) + "px";
+  tooltip.style.top = (infoNupp.offsetTop + infoNupp.offsetHeight) + "px";
+  infoNupp.style.background="darkgrey"
+  tooltip.style.display = "block";
+});
+
+infoNupp.addEventListener("mouseleave", function() {
+  tooltip.style.display = "none";
+  infoNupp.style.background="transparent"
+});
+
+// ----------------------------------------- HTML ToolTip -------------------------------------------  
+
+};
+
+
+// ----------------------------------------- MATHQUILL KRAAM-----------------------------------------
+var MQ = MathQuill.getInterface(2);
+var answerSpan = document.getElementById('answer');
+answerSpan.style.backgroundColor="white";
+answerSpan.style.width="10px"
+var latexSpan = document.getElementById('lihtsam');
+var latexTEXT = document.getElementById('latex');
+var answerMathField = MQ.MathField(answerSpan, {
+                handlers: {
+                edit: function() {
+                    var enteredMath = answerMathField.latex();
+                    latexSpan.textContent = answerMathField.text()// Get entered math in LaTeX format   
+                    latexTEXT.textContent=answerMathField.latex();
+                }
+                }
+            });
+
+// ----------------------------------------- MATHQUILL KRAAM-----------------------------------------
+
+
 
 function setup() {
-  
-  PAUS=createButton("Jätka");
-  PAUS.style('padding','10px 20px');
-  PAUS.style('background-color','#FF8F00');
-  PAUS.style('color','black');
-  PAUS.style('border-radius','30px');
-  PAUS.style('margin-top','30px');
-  PAUS.style('margin-left','15px');
-  PAUS.style("width","490px");
-  PAUS.position(-10,345);
 
-  raadius_html=createP("");
-  perimeeter_html=createP("");
-  ringi_pindala_html=createP("");
-  kolmnurga_pindala_html=createP("");
-  raadius_html.position(125,170);
-  perimeeter_html.position(230,210);
-  ringi_pindala_html.position(125,20);
-  kolmnurga_pindala_html.position(225,20);
-  raadius_html.style("color:white");
-  perimeeter_html.style("color:white");
-  ringi_pindala_html.style("color:white");
-  kolmnurga_pindala_html.style("color:white");
-  
-  //frameRate(1)
-  createCanvas(500, 400);
-  stroke(255);
-  
-  // CREATE ARRAYS, initX ja initY
-  for (i=0; i<nr_nodes; i++){
-    init_X.push(X_start);
-    init_Y.push(Y_start);
-    X_start=X_start+X_step;
-  }
+  canvas=createCanvas(600,580,WEBGL);
+  write_texts();
+  Reset();
 
-  for (i=0; i<nr_nodes; i++){
-    init_X2.push(X_start2);
-    init_Y2.push(Y_start2);
-    X_start2=X_start2+X_step2;
-  }
+  stroke(100,180,200);
+  strokeWeight(4);
+  let fov= PI/3;
+  let cameraZ=(height/2.0)/tan(fov/2.0);
+  perspective(fov, width/height, cameraZ/10000.0, cameraZ*10000);
 
-  for (i=0; i<nr_nodes; i++){
-    init_X3.push(X_start3);
-    init_Y3.push(Y_start3);
-    X_start3=X_start3+X_step3;
-  }
 
-  for (i=0; i<nr_nodes; i++){
-    init_X4.push(X_start4);
-    init_Y4.push(Y_start4);
-    X_start4=X_start4+X_step4;
-  }
+  MathQuill_v6rrand=select("#answer");
+  MathQuill_v6rrand.position(width/asukoha_nr+60,height/asukoha_nr+145);
+  MathQuill_v6rrand.style(" width: 200px; margin-top: 70px auto; font-size: 24px;");
 
- 
+  MathQuill_v6rrand2=select("#answer2");
+  MathQuill_v6rrand2.position(width/asukoha_nr+60,height/asukoha_nr+195);
+  MathQuill_v6rrand2.style(" width: 200px; margin-top: 70px auto; font-size: 24px;");
 }
-
 
 function draw() {
-  PAUS.mousePressed(pause_or_continute)
-  background(25,25,25);
-  
-  // DRAW THE NODES AND LINES---------------
-  for (i=0; i<=init_X.length-1; i++){
-    circle(init_X[i],init_Y[i],node_radius);
-    if (i>=1){
-      line(init_X[i-1], init_Y[i-1],init_X[i], init_Y[i])
-    }
-  }
+  clear();
+  background(251,253,255);
 
-  for (i=0; i<=init_X2.length-1; i++){
-    circle(init_X2[i],init_Y2[i],node_radius);
-    if (i>=1){
-      line(init_X2[i-1], init_Y2[i-1],init_X2[i], init_Y2[i])
-    }
-  }
+  katex.render(KaTeX_EQ, katexEquation);
 
-  for (i=0; i<=init_X3.length-1; i++){
-    circle(init_X3[i],init_Y3[i],node_radius);
-    if (i>=1){
-      line(init_X3[i-1], init_Y3[i-1],init_X3[i], init_Y3[i])
-    }
-  }
+  yl_text.position(width/asukoha_nr,height/asukoha_nr);
+  tex_vorrand.position(width/asukoha_nr+0,height/asukoha_nr+60);
+  tulemus.position(width/asukoha_nr+0,height/asukoha_nr+270);
 
-  for (i=0; i<=init_X4.length-1; i++){
-    circle(init_X4[i],init_Y4[i],node_radius);
-    if (i>=1){
-      line(init_X4[i-1], init_Y4[i-1],init_X4[i], init_Y4[i])
-    }
-  }
-  
-  // DRAW THE NODES AND LINES---------------
-  
-  if (toggle==false){
-  
-  Xc=init_X[init_X.length-(slicer+1)];
-  Yc=init_Y[init_Y.length-(slicer+1)];
-  Xc2=init_X2[init_X2.length-(slicer+1)];
-  Yc2=init_Y2[init_Y2.length-(slicer+1)];
-  Xc3=init_X3[init_X3.length-(slicer+1)];
-  Yc3=init_Y3[init_Y3.length-(slicer+1)];
-  Xc4=init_X4[init_X4.length-(slicer+1)];
-  Yc4=init_Y4[init_Y4.length-(slicer+1)];
+  KONTROLL_NUPP.position(width/asukoha_nr-110,height/asukoha_nr+350);
+  KONTROLL_NUPP.mousePressed(Kontroll);
 
-  points_to_rotate_X=init_X.slice(init_X.length-slicer);
-  points_to_rotate_Y=init_Y.slice(init_Y.length-slicer);
-  points_to_rotate_X2=init_X2.slice(init_X2.length-slicer);
-  points_to_rotate_Y2=init_Y2.slice(init_Y2.length-slicer);
-  points_to_rotate_X3=init_X3.slice(init_X3.length-slicer);
-  points_to_rotate_Y3=init_Y3.slice(init_Y3.length-slicer);
-  points_to_rotate_X4=init_X4.slice(init_X4.length-slicer);
-  points_to_rotate_Y4=init_Y4.slice(init_Y4.length-slicer);
-  //console.log(total_deg)
-  // Save the new "points to rotate" in next iteration
+  RESET_NUPP.position(width/asukoha_nr+70,height/asukoha_nr+350);
+  RESET_NUPP.mousePressed(Reset);
 
-  new_points_to_rotate_X = rotatePoints(points_to_rotate_X, points_to_rotate_Y, Xc, Yc, rot_angle)[0];
-  new_points_to_rotate_Y = rotatePoints(points_to_rotate_X, points_to_rotate_Y, Xc, Yc,rot_angle)[1];
-  new_points_to_rotate_X2 = rotatePoints(points_to_rotate_X2, points_to_rotate_Y2, Xc2, Yc2, rot_angle)[0];
-  new_points_to_rotate_Y2 = rotatePoints(points_to_rotate_X2, points_to_rotate_Y2, Xc2, Yc2,rot_angle)[1];
-  new_points_to_rotate_X3 = rotatePoints(points_to_rotate_X3, points_to_rotate_Y3, Xc3, Yc3, rot_angle)[0];
-  new_points_to_rotate_Y3 = rotatePoints(points_to_rotate_X3, points_to_rotate_Y3, Xc3, Yc3,rot_angle)[1];
-  new_points_to_rotate_X4 = rotatePoints(points_to_rotate_X4, points_to_rotate_Y4, Xc4, Yc4, rot_angle)[0];
-  new_points_to_rotate_Y4 = rotatePoints(points_to_rotate_X4, points_to_rotate_Y4, Xc4, Yc4,rot_angle)[1];
+  LOPETA_NUPP.mousePressed(Lopp);
+  LOPETA_NUPP.position(width/asukoha_nr+20,height/asukoha_nr+420);
 
+  ALISTUMIS_NUPP.mousePressed(Alistun);
 
-  total_deg=total_deg+rot_angle;
- 
-    init_X.splice(init_X.length-slicer, slicer, ...new_points_to_rotate_X);
-    init_Y.splice(init_Y.length-slicer, slicer, ...new_points_to_rotate_Y);
-    init_X2.splice(init_X2.length-slicer, slicer, ...new_points_to_rotate_X2);
-    init_Y2.splice(init_Y2.length-slicer, slicer, ...new_points_to_rotate_Y2);
-    init_X3.splice(init_X3.length-slicer, slicer, ...new_points_to_rotate_X3);
-    init_Y3.splice(init_Y3.length-slicer, slicer, ...new_points_to_rotate_Y3);
-    init_X4.splice(init_X4.length-slicer, slicer, ...new_points_to_rotate_X4);
-    init_Y4.splice(init_Y4.length-slicer, slicer, ...new_points_to_rotate_Y4);
+  MathQuill_v6rrand.position(width/asukoha_nr+60,height/asukoha_nr+245);
+  MathQuill_v6rrand2.position(width/asukoha_nr+60,height/asukoha_nr+315);
 
-//     console.log(init_X.splice(init_X.length-slicer, slicer, ...new_points_to_rotate_X))
-  if (abs(total_deg)>=180-((nr_nodes-2-1)*180)/(nr_nodes-1) ){
-    total_deg=0;
-    slicer=slicer+slicer_mark;
-    if (slicer>=nr_nodes-1){
-      slicer_mark=slicer_mark*(-1);
-      rot_angle=rot_angle*(-1);
-      slicer=slicer+slicer_mark;
-    } else if (slicer<=0){
+  sisend_vastus.position(width/asukoha_nr-0,height/asukoha_nr+222);
 
-      slicer_mark=slicer_mark*(-1);
-      rot_angle=rot_angle*(-1);
-      slicer=slicer+slicer_mark;
-    } 
-  }
-
-  }  
-  
+  // ----------------------------------------Ringi JOONIS
   push();
-  stroke(255,0,0);
-  strokeWeight(1.5);
-  noFill();
-  line(init_X[0],init_Y[0],init_X[0],160);
-  line(400,200,150,160);
-  circle(150,160,2);
+  stroke(0);
+  strokeWeight(2);
+  noFill();// Siin saab kujundit nihutada x võrra või y võrra.
+  circle(-150,-100, 120);
   pop();
-    
-  
-  
-  katex.render("r", raadius_html.elt);
-  katex.render("C=2 \\pi r", perimeeter_html.elt);
-  katex.render("S_{\\bigcirc}=\\pi r^{2}", ringi_pindala_html.elt);
-  katex.render("S_{\\bigtriangleup}= \\dfrac{a \\cdot h}{2} = \\dfrac{C \\cdot r }{2}=\\dfrac{ \\cancel{2}  \\pi r \\cdot r}{\\cancel{2}}=\\pi \\cdot r^{2}", kolmnurga_pindala_html.elt);
-  
-  
-  ringi_pindala_html.position(25,40);
-  kolmnurga_pindala_html.position(155,30);
-  // katex.render("\\text{Punkte kokku }"+"(P_{k}): "+str(punktid_temp),koguPunktid_txt.elt);
-    
-}
+  push();
+  stroke(0,0,255);
+  strokeWeight(3);
+  line(-150,-100, -90,-100);
+  pop();
+  kaatet_1_node.position(155,165);
 
-const rotatePoints = function (X_massiiv,Y_massiiv, centerX, centerY, nurk){
-  praegune_X=[];
-  praegune_Y=[];
-  for (i=0; i<=X_massiiv.length-1; i++){
-        temporary_X=(X_massiiv[i]-centerX)*Math.cos(nurk*Math.PI/180)-(Y_massiiv[i]-centerY)*Math.sin(nurk*Math.PI/180)+centerX;
-        temporary_Y=(X_massiiv[i]-centerX)*Math.sin(nurk*Math.PI/180)+(Y_massiiv[i]-centerY)*Math.cos(nurk*Math.PI/180)+centerY;
+  //----------------------------------------Ringi JOONIS
 
-      praegune_X.push(temporary_X);
-      praegune_Y.push(temporary_Y);
+   if(lopetamise_tingimus==true){
+    background(15,30,60);
   }
-  return [praegune_X, praegune_Y]
 }
 
 
-function pause_or_continute(){
-  if (toggle==true){
-    toggle=false
-    PAUS.html("Jätka");
-    PAUS.style('background-color',"#00897B");
-    PAUS.style('color','black');
-    PAUS.html("Peata")
-  } else if (toggle==false){
-    toggle=true
-    PAUS.html("Paus");
-    PAUS.style('background-color','#FF8F00');
-    PAUS.style('color','black');
-    PAUS.html("Jätka")
-  };
+// See genereerib täisarvu NEGATIIVSEST JA POSITIIVSEST vahemikust. 
+// Ehk nt random_int(10), genereerib arvu vahemikust (-10;10).
+
+function random_int(max) {
+  return ((Math.random()-0.5)*2)*max;
+}
+
+
+function Ylesanne(){
+
+  mudelid=["1","2","3","4","5","6","7","8","9","10","11","12"];
+  mudeli_valik=random(mudelid);
+
+  raadius=round_0(random()*50);
+  pindala=round_2(3.14*raadius*raadius);
+  perimeeter=round_2(3.14*raadius*2);
+  diameeter=raadius*2;
+
+  console.log(raadius,pindala,perimeeter,diameeter)
+
+  if (mudeli_valik=="1"){
+    yl_text.html("Leia ringi pindala S, kui ringi raadius r on r = "+str(raadius)+".");
+    vastus=pindala;
+    otsitav="S";
+    kaatet_1_node.html(" r = "+str(raadius));
+  } else if (mudeli_valik=="2"){
+    yl_text.html("Leia ringi ümbermõõt C, kui ringi raadius r on r = "+str(raadius)+".");
+    vastus=perimeeter;
+    otsitav="C";
+    kaatet_1_node.html(" r = "+str(raadius));
+  } else if (mudeli_valik=="3"){
+    yl_text.html("Leia ringi ümbermõõt C, kui ringi diameeter d on d = "+str(diameeter)+".");
+    vastus=perimeeter;
+    otsitav="C";
+    kaatet_1_node.html(" r = ?");
+  } else if (mudeli_valik=="4"){
+    yl_text.html("Leia ringi pindala S, kui ringi diameeter d on d = "+str(diameeter)+".");
+    vastus=pindala;
+    otsitav="S";
+    kaatet_1_node.html(" r = ?");
+  } else if (mudeli_valik=="5"){
+    yl_text.html("Leia ringi ümbermõõt C, kui ringi pindala S on S = "+str(pindala)+".");
+    vastus=perimeeter;
+    otsitav="C";
+    kaatet_1_node.html(" r = ?");
+  } else if (mudeli_valik=="6"){
+    yl_text.html("Leia ringi pindala S, kui ringi ümbermõõt C on C = "+str(perimeeter)+".");
+    vastus=pindala;
+    otsitav="S";
+    kaatet_1_node.html(" r = ?");
+  } else if (mudeli_valik=="7"){
+    yl_text.html("Leia ringi raadius r, kui ringi diameeter d on d = "+str(diameeter)+".");
+    vastus=raadius;
+    otsitav="r";
+    kaatet_1_node.html(" r = ?");
+  } else if (mudeli_valik=="8"){
+    yl_text.html("Leia ringi raadius r, kui ringi ümbermõõt C on C = "+str(perimeeter)+".");
+    vastus=raadius;
+    otsitav="r";
+    kaatet_1_node.html(" r = ?");
+  } else if (mudeli_valik=="9"){
+    yl_text.html("Leia ringi raadius r, kui ringi pindala S on S = "+str(pindala)+".");
+    vastus=raadius;
+    otsitav="r";
+    kaatet_1_node.html(" r = ?");
+  } else if (mudeli_valik=="10"){
+    yl_text.html("Leia ringi diameeter d, kui ringi raadius r on r = "+str(raadius)+".");
+    vastus=diameeter;
+    otsitav="d";
+    kaatet_1_node.html(" r = "+str(raadius));
+  } else if (mudeli_valik=="11"){
+    yl_text.html("Leia ringi diameeter d, kui ringi ümbermõõt C on C = "+str(perimeeter)+".");
+    vastus=diameeter;
+    otsitav="d";
+    kaatet_1_node.html(" r = ?");
+  } else if (mudeli_valik=="12"){
+    yl_text.html("Leia ringi diameeter d, kui ringi pindala S on S = "+str(pindala)+".");
+    vastus=diameeter;
+    otsitav="d";
+    kaatet_1_node.html(" r = ?");
+  }
+
+    //console.log(vastus)
+  // katex.render( antav_ylesanne, tex_vorrand.elt);
+     katex.render(str(otsitav)+"=",sisend_vastus.elt);
+
+}
+
+
+function write_texts(){
+
+  tex_vorrand=createP("");
+  tex_vorrand.position(width/asukoha_nr+0,height/asukoha_nr+60)
+  tex_vorrand.style("font-family: 'Roboto',sans-serif; font-size: 1.25rem; line-height: 140%; width: 100%; float: left ")
+
+  yl_text=createP("");
+  yl_text.style("font-family: 'Roboto'; font-weight: bold; sans-serif;line-height: 140%; font-size: 1.25rem; maxWidth: 500px");
+  yl_text.position(width/asukoha_nr,height/asukoha_nr);
+
+  tulemus=createP("");
+  tulemus.position(width/asukoha_nr+155,height/asukoha_nr+65);
+  tulemus.style("font-family: 'Roboto',sans-serif;line-height: 140%; font-size: 1.00rem ");
+
+  sisend_vastus=createP("");
+  sisend_vastus.style("font-family: 'Roboto',sans-serif;line-height: 140%; font-size: 1.25rem ");
+
+
+  kaatet_1_node=createP("a");
+  kaatet_1_node.position(width/asukoha_nr+155,height/asukoha_nr+65);
+  kaatet_1_node.style("font-family: 'Roboto',sans-serif;line-height: 140%; font-size: 1.00rem ");
+
+}
+
+
+
+function Alistun() {
+  tulemus.html("");
+  console.log(vastus)
+  tulemus.style("color: black")
+  tulemus.html("Sobivad vastused olid: "+str(vastus));
+  KONTROLL_NUPP.attribute("disabled","");
+  ALISTUMIS_NUPP.attribute("disabled","");
+}
+
+
+
+function Kontroll(){
+
+  sisu_1=str(document.getElementById("lihtsam").textContent);
+  //console.log(sisu_1, vastus)
+if (sisu_1==vastus){
+  vastused_korras=true;
+} else {
+  vastused_korras=false;
+}
+
+  //------------------------------------------------------------------------
+
+        if (sisu_1==""){
+          tulemus.html("Vastus on tühi!");
+          tulemus.style("color","orange");
+        }  else if ( vastused_korras==true ) {
+          //katex.render("Korras! Õiged vastused olid ka: ", tulemus.elt)
+          tulemus.html("Korras!");
+          tulemus.style("color","green");
+          oige_vastus=oige_vastus+1;
+          KONTROLL_NUPP.attribute("disabled","");
+          ALISTUMIS_NUPP.attribute("disabled","");
+          vastused_korras=true;
+        } else {
+          tulemus.html("Midagi on valesti!");
+          tulemus.style("color","red");
+        }
+}
+
+
+function Reset(){
+  if(ylesannete_loendur>0){
+
+    KONTROLL_NUPP.remove();
+    RESET_NUPP.remove();
+    LOPETA_NUPP.remove();
+    ALISTUMIS_NUPP.remove();
+  }
+
+  answerMathField.focus();
+  answerMathField.latex("");
+
+  vastused_korras=false;
+  Ylesanne();
+  tulemus.html("");
+
+  KONTROLL_NUPP=createButton("Kontroll");
+  KONTROLL_NUPP.style('padding','10px 20px');
+  KONTROLL_NUPP.style('background-color','MidNightBlue');
+  KONTROLL_NUPP.style('color','white');
+  KONTROLL_NUPP.style('border-radius','30px');
+  KONTROLL_NUPP.style('margin-top','30px');
+  KONTROLL_NUPP.style('margin-left','100px');
+  KONTROLL_NUPP.position(width/asukoha_nr-50,height/asukoha_nr+300);
+
+  RESET_NUPP=createButton("Uus ülesanne");
+  RESET_NUPP.style('padding','10px 20px');
+  RESET_NUPP.style('background-color','#508bc3');
+  RESET_NUPP.style('color','white');
+  RESET_NUPP.style('border-radius','30px');
+  RESET_NUPP.style('margin-top','30px');
+  RESET_NUPP.style('margin-left','20px');
+  RESET_NUPP.position(width/asukoha_nr+130,height/asukoha_nr+300);
+
+  LOPETA_NUPP=createButton("Lõpeta test");
+  LOPETA_NUPP.style('padding','10px 20px');
+  LOPETA_NUPP.style('background-color','LightSteelBlue');
+  LOPETA_NUPP.style('color','black');
+  LOPETA_NUPP.style('font-weight','bold');
+  LOPETA_NUPP.style('border-radius','30px');
+  LOPETA_NUPP.style('margin-top','30px');
+  LOPETA_NUPP.style('margin-left','80px');
+  LOPETA_NUPP.position(width/asukoha_nr+200,height/asukoha_nr+300);
+
+  ALISTUMIS_NUPP=createButton("Näita lahendust");
+  ALISTUMIS_NUPP.style('padding','5px 10px');
+  ALISTUMIS_NUPP.style('background-color','rgb(255,255,255)');
+  ALISTUMIS_NUPP.style('color','black');
+  ALISTUMIS_NUPP.style('border-radius','0px');
+  ALISTUMIS_NUPP.style('border-width','1px');
+  ALISTUMIS_NUPP.style('font-weight','bold');
+  ALISTUMIS_NUPP.style('margin-top','30px');
+  ALISTUMIS_NUPP.style('margin-left','80px');
+  ALISTUMIS_NUPP.position(width/asukoha_nr+200,height/asukoha_nr+217);
+
+  KONTROLL_NUPP.mouseOver(function() {
+    KONTROLL_NUPP.style('background-color', 'rgba(25, 25, 112, 0.75)');
+  });
+
+  KONTROLL_NUPP.mouseOut(function() {
+    KONTROLL_NUPP.style('background-color', 'rgb(25, 25, 112)');
+  });
+
+  RESET_NUPP.mouseOver(function() {
+        RESET_NUPP.style('background-color','rgba(80,139,195,0.75)');
+  });
+
+  RESET_NUPP.mouseOut(function() {
+      RESET_NUPP.style('background-color','#508bc3');
+  });
+
+  LOPETA_NUPP.mouseOver(function() {
+    LOPETA_NUPP.style('background-color',	"rgba(176,196,222,0.75)");
+  });
+
+  LOPETA_NUPP.mouseOut(function() {
+    LOPETA_NUPP.style('background-color','rgb(176,196,222)');
+  });
+
+  ALISTUMIS_NUPP.mouseOver(function() {
+    ALISTUMIS_NUPP.style('background-color',	"rgba(25, 25, 112, 0.75)");
+    ALISTUMIS_NUPP.style('color','white');
+  });
+
+  ALISTUMIS_NUPP.mouseOut(function() {
+    ALISTUMIS_NUPP.style('background-color','rgb(255,255,255)');
+      ALISTUMIS_NUPP.style('color','black');
+  });
+
+
+  ylesannete_loendur=ylesannete_loendur+1;
+
+}
+
+
+
+function Lopp(){
+
+  KONTROLL_NUPP.attribute("disabled","");
+  RESET_NUPP.attribute("disabled","");
+  LOPETA_NUPP.attribute("disabled","");
+  ALISTUMIS_NUPP.attribute("disabled","");
+
+
+  tex_vorrand.remove();
+  yl_text.remove();
+  tulemus.remove();
+  kaatet_1_node.remove();
+
+
+
+  RESET_NUPP.remove();
+  LOPETA_NUPP.remove();
+  KONTROLL_NUPP.remove();
+  ALISTUMIS_NUPP.remove();
+  sisend_vastus.remove();
+  MathQuill_v6rrand.remove();
+  MathQuill_v6rrand2.remove();
+  tooltip.remove();
+  infoNupp.remove();
+
+  Tulemus=createP("Tulemus: "+str(round_2((oige_vastus/ylesannete_loendur)*100))+"%<br>Kogu ülesannete arv: "+str(ylesannete_loendur)+"<br>Õigeid lahendusi: "+str(oige_vastus));
+  Tulemus.position(width/4-100,height/4-100);
+  Tulemus.style("font-size","28px");
+  Tulemus.style("color",color(255,255,255));
+  Tulemus.style("line-height","140%");
+  Tulemus.style("font-family","'Roboto',sans-serif");
+  lopetamise_tingimus=true;
+}
+
+
+
+function round_0(v) {
+    return (Math.sign(v) * Math.round(Math.abs(v)) )
+}
+
+function round_1(v) {
+    return (Math.sign(v) * Math.round(Math.abs(v)*10)/10 )
+}
+
+function round_2(v) {
+    return (Math.sign(v) * Math.round(Math.abs(v)*100)/100 )
+}
+
+function round_3(v) {
+    return (Math.sign(v) * Math.round(Math.abs(v)*1000)/1000 )
+}
+
+
+
+
+// // for end screen
+// empty_vec=[]
+// function new_step(){
+
+//     direction=random(["up","down","left","right","forward","back"]);
+//     if (direction=="up"){
+//       X=X+step;
+//     } else if (direction == "down"){
+//       X=X-step;
+//     } else if (direction=="left"){
+//       Y=Y-step;
+//     } else if (direction=="right"){
+//       Y=Y+step;
+//     } else if (direction=="forward"){
+//       Z=Z+step;
+//     } else if (direction=="back"){
+//       Z=Z-step;
+//     }
+//   vek=createVector(X,Y,Z);
+//   empty_vec.push(vek);
+// }
+
+
+function shuffleArray(array) {
+   for (var i = array.length - 1; i > 0; i--) {
+
+       // Generate random number
+       var j = Math.floor(Math.random() * (i + 1));
+
+       var temp = array[i];
+       array[i] = array[j];
+       array[j] = temp;
+   }
+
+   return array;
 }
