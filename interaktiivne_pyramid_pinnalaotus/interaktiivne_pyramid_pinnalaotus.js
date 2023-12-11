@@ -102,6 +102,11 @@ function setup() {
   strokeWeight(2);
   noFill();
   
+  liigutamise_tekst_HTML=createP("Saad seda pinnalaotust liigutada ja erinevate<br>nurkade alt uurida.")
+  liigutamise_tekst_HTML.position(30,10);
+  liigutamise_tekst_HTML.style("color:white");
+  liigutamise_tekst_HTML.style("font-size:16px");
+
   STOP=createButton("Jätka");
   STOP.mousePressed(stop_rotate);
   STOP.style('padding','10px 20px');
@@ -114,23 +119,22 @@ function setup() {
   STOP.position(0,330);
   
   pindala_HTML=createP("");
-  pindala_HTML.position(30,30);
+  pindala_HTML.position(30,60);
   pindala_HTML.style("color:white");
 
   tekstJoonisel=createP("")
-  pindala_HTML.position(30,30);
   tekstJoonisel.style("color:white");
 
   Sp_HTML=createP("");
-  Sp_HTML.position(30,70);
+  Sp_HTML.position(30,100);
   Sp_HTML.style("color:white");
   
   Sk_HTML=createP("");
-  Sk_HTML.position(30,110);
+  Sk_HTML.position(30,140);
   Sk_HTML.style("color:white");
   
   kolmnurk_HTML=createP("");
-  kolmnurk_HTML.position(30,150);
+  kolmnurk_HTML.position(30,180);
   kolmnurk_HTML.style("color:white");
   
 }
