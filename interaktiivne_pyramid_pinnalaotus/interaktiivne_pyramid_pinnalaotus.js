@@ -15,12 +15,12 @@ tooltip.style.width="340px"
 document.body.appendChild(tooltip);
 
 regularText = document.createElement("div");
-regularText.innerHTML = "NB!<br><br>Tasub rõhutada, et püramiidi täispindala sõltub püramiidi põhjast.<br>Kuna praeguses näites on põhjaks ruut, siis on ka põhja pindala arvutatav ruudu pindala valemiga. Kui põhjaks oleks aga kolmnurk või mõni hulknurk, siis tuleks valida nendele kujunditele vastav pindala valem.<br>Külgpindala sõltub samuti püramiidi põhjast. Kui põhjaks on kujund, mille kõik küljed on võrdsed, siis piisab sellest, kui arvutame ühe külje kolmnurga pindala ja korrutame selle põhja külgede arvuga. Kui põhjaks on aga erinevate külgedega kujund, siis on ka külgedel olevate kolmnurkade alused erinevad ja seega tuleb nende pindalad eraldi välja arvutada ja lõpuks tulemused summeerida.";
+regularText.innerHTML = "Püramiidi täispindala sõltub püramiidi põhjast.";
 regularText.style.fontFamily="Computer Modern";
 regularText.style.fontSize="16px";
 tooltip.appendChild(regularText);
 
-KaTeX_EQ="\\text{Näiteks kui soovid kirjutada murdu } \\dfrac{a}{b} \\text{ siis tuleb trükkida a/b}."
+KaTeX_EQ=""
 katexEquation = document.createElement("div");
 tooltip.appendChild(katexEquation);
 
@@ -93,7 +93,7 @@ var nurk_eesmine_tahk_SUM=0;
 var nurk_parem_tahk_SUM=0;
 var nurk_vasak_tahk_SUM=0;
 
-var toggle=true;
+var toggle=false;
 
 function setup() {
   createCanvas(400, 400,WEBGL);
@@ -102,10 +102,10 @@ function setup() {
   strokeWeight(2);
   noFill();
   
-  STOP=createButton("Stop");
+  STOP=createButton("Jätka");
   STOP.mousePressed(stop_rotate);
   STOP.style('padding','10px 20px');
-  STOP.style('background-color',"#00897B");
+  STOP.style('background-color','#FF8F00');
   STOP.style('color','black');
   STOP.style('border-radius','30px');
   STOP.style('margin-top','30px');
@@ -116,7 +116,11 @@ function setup() {
   pindala_HTML=createP("");
   pindala_HTML.position(30,30);
   pindala_HTML.style("color:white");
-  
+
+  tekstJoonisel=createP("")
+  pindala_HTML.position(30,30);
+  tekstJoonisel.style("color:white");
+
   Sp_HTML=createP("");
   Sp_HTML.position(30,70);
   Sp_HTML.style("color:white");
@@ -182,7 +186,7 @@ function draw() {
   katex.render("S_{p}=a^{2}", Sp_HTML.elt);
   katex.render("S_{k}=4 \\cdot S_{\\bigtriangleup}", Sk_HTML.elt);
   katex.render("S_{\\bigtriangleup}=\\dfrac{a \\cdot m}{2}", kolmnurk_HTML.elt);
-
+  tekstJoonisel.html("Saad seda pinnalaotust liigutada ja erinevate nurkade alt uurida.")
 }
 
 
@@ -329,6 +333,6 @@ function stop_rotate(){
     step=1;
     STOP.style('background-color',"#00897B");
     STOP.style('color','black');
-    STOP.html("Stop")
+    STOP.html("Peata")
   }
 }
