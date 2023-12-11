@@ -16,7 +16,7 @@ var Yc3;
 var Xc4;
 var Yc4;
 
-var node_radius=1;
+var node_radius=0;
 var nr_nodes=25; // since the first and last nodes merge, we need to N+1 for N-nurk.
 var slicer=1;
 var slicer_mark=1;
@@ -57,13 +57,13 @@ var total_deg=0;
 
 var tagged=false;
 
-var toggle=false;
+var toggle=true;
 
 function setup() {
   
-  PAUS=createButton("Paus");
+  PAUS=createButton("Jätka");
   PAUS.style('padding','10px 20px');
-  PAUS.style('background-color',"#00897B");
+  PAUS.style('background-color','#FF8F00');
   PAUS.style('color','black');
   PAUS.style('border-radius','30px');
   PAUS.style('margin-top','30px');
@@ -256,7 +256,7 @@ function pause_or_continute(){
     PAUS.html("Jätka");
     PAUS.style('background-color',"#00897B");
     PAUS.style('color','black');
-    PAUS.html("Stop")
+    PAUS.html("Peata")
   } else if (toggle==false){
     toggle=true
     PAUS.html("Paus");
