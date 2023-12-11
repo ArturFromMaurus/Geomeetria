@@ -27,7 +27,7 @@ function setup() {
   MC_result=createP("a");
   MC_result.position(30,ruutR+310);
   
-  PAUS=createButton("Paus");
+  PAUS=createButton("Jätka");
   PAUS.position(275,337);
 }
 
@@ -49,7 +49,7 @@ function draw() {
   circle(150+20,150+20, 300 );
   pop();
 
-  if (toggle==false){
+  if (toggle==true){
   if (punktid_temp <= max_punkte){
     
     generate_point();
@@ -83,7 +83,7 @@ function draw() {
     punktide_massiivY.push(numY);
     punktid_ringis=0;
   }
-  } else if (toggle==true){
+  } else if (toggle==false){
       for ( i=0; i< punktide_massiivX.length; i++ ){
         push();
         strokeWeight(3);
@@ -124,11 +124,11 @@ function round_4(v) {
 }
 
 function pause_or_continute(){
-  if (toggle==true){
-    toggle=false
-    PAUS.html("Paus");
-  } else if (toggle==false){
+  if (toggle==false){
     toggle=true
+    PAUS.html("Paus");
+  } else if (toggle==true){
+    toggle=false
     PAUS.html("Jätka");
   };
 }
